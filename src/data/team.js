@@ -7,5 +7,5 @@ export const team = [
   { name: "Arjun Pendharkar",     role: "Director of Education",                     photo: "/team/arjun-pendharkar.jpg" },
   { name: "Srinidhi Mudaliar",    role: "Director of Hackathons and Event Planning", photo: "/team/srinidhi-mudaliar.jpg" },
   { name: "Vishvak Kope",         role: "Director of Branch Operations",             photo: "/team/vishvak-kope.jpg" },
-  { name: "Srikar Kakarla",       role: "Director of Finance",                       photo: null },
+  { name: "Srikar Kakarla",       role: "Director of Finance",                       photo: "/team/srikar-kakarla.jpg" },
 ];

@@ -1,7 +1,8 @@
 import PageHero from "../components/PageHero";
 import Reveal from "../components/Reveal";
 import SectionHead from "../components/SectionHead";
-import { forms, org } from "../data/site";
+import { forms, org, pastHackathons } from "../data/site";
+import { asset } from "../lib/asset";
 
 const facts = [
   { k: "Focus", v: "Mental health technology" },
@@ -53,6 +54,40 @@ export default function Hackathon() {
                   <span className="fact__k">{f.k}</span>
                   <span className="fact__v">{f.v}</span>
                 </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="shell">
+          <SectionHead eyebrow="Past hackathons" title="What we've run on Devpost." />
+          <div className="grid grid--2">
+            {pastHackathons.map((h, i) => (
+              <Reveal key={h.name} delay={i * 70}>
+                <a className="card past-hack" href={h.url} target="_blank" rel="noreferrer">
+                  <span className="past-hack__flier">
+                    {h.flier ? (
+                      <img src={asset(h.flier)} alt={`${h.name} flier`} loading="lazy" />
+                    ) : (
+                      <span className="past-hack__placeholder">{h.name}</span>
+                    )}
+                  </span>
+                  <span className="past-hack__body">
+                    <span className="fact__k">{h.dates}</span>
+                    <span className="fact__v">{h.name}</span>
+                    <span className="past-hack__tagline">{h.tagline}</span>
+                    <span className="past-hack__stats">
+                      {h.stats.map((s) => (
+                        <span key={s} className="chip chip--green">{s}</span>
+                      ))}
+                    </span>
+                    <span className="past-hack__more">
+                      View on Devpost <span className="arrow" aria-hidden="true">→</span>
+                    </span>
+                  </span>
+                </a>
               </Reveal>
             ))}
           </div>

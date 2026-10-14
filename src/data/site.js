@@ -98,3 +98,23 @@ export const pathways = [
     cta: { label: "Start a branch", to: "/starting-a-branch" },
   },
 ];
+
+/* Past Devpost hackathons, newest first. `flier` lives in /public/hackathons. */
+export const pastHackathons = [
+  {
+    name: "Sustain-a-thon",
+    tagline: "Create an app, device, or game to spread awareness about climate issues.",
+    dates: "Nov 24, 2025 – Jan 1, 2026",
+    stats: ["138 participants", "$300 in cash prizes"],
+    flier: null,
+    url: "https://sustain-a-thon-sca.devpost.com/",
+  },
+  {
+    name: "Mindfulness Hacks",
+    tagline: "Fostering minds, one line at a time.",
+    dates: "Nov 25, 2024 – Jan 15, 2025",
+    stats: ["338 participants", "$250 in prizes"],
+    flier: "/hackathons/mindfulness-hacks.png",
+    url: "https://mindfulness-hacks-sca.devpost.com/",
+  },
+];
