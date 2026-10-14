@@ -30,36 +30,6 @@ export default function Hackathon() {
         </div>
       </PageHero>
 
-      <section className="section section--tight">
-        <div className="shell">
-          <Reveal>
-            <div className="card hack-panel">
-              <p className="lede">
-                Launching in October, our Social Hackathon focuses on mobilizing youth
-                for mental health-based technology. We aspire to be the largest
-                youth-only focused hackathon for mental health on the East Coast.
-              </p>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="shell">
-          <SectionHead eyebrow="At a glance" title="The short version." />
-          <div className="grid grid--2 facts">
-            {facts.map((f, i) => (
-              <Reveal key={f.k} delay={i * 70}>
-                <div className="card fact">
-                  <span className="fact__k">{f.k}</span>
-                  <span className="fact__v">{f.v}</span>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section className="section">
         <div className="shell">
           <SectionHead eyebrow="Past hackathons" title="What we've run on Devpost." />
@@ -88,6 +58,36 @@ export default function Hackathon() {
                     </span>
                   </span>
                 </a>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section section--tight">
+        <div className="shell">
+          <Reveal>
+            <div className="card hack-panel">
+              <p className="lede">
+                Launching in October, our Social Hackathon focuses on mobilizing youth
+                for mental health-based technology. We aspire to be the largest
+                youth-only focused hackathon for mental health on the East Coast.
+              </p>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="shell">
+          <SectionHead eyebrow="At a glance" title="The short version." />
+          <div className="grid grid--2 facts">
+            {facts.map((f, i) => (
+              <Reveal key={f.k} delay={i * 70}>
+                <div className="card fact">
+                  <span className="fact__k">{f.k}</span>
+                  <span className="fact__v">{f.v}</span>
+                </div>
               </Reveal>
             ))}
           </div>

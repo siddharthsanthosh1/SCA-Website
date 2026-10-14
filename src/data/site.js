@@ -114,7 +114,7 @@ export const pastHackathons = [
     tagline: "Fostering minds, one line at a time.",
     dates: "Nov 25, 2024 – Jan 15, 2025",
     stats: ["338 participants", "$250 in prizes"],
-    flier: "/hackathons/mindfulness-hacks.png",
+    flier: null,
     url: "https://mindfulness-hacks-sca.devpost.com/",
   },
 ];
