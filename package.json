@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && npm run build:learn",
-    "build:learn": "npm --prefix learn run build -- --outDir ../dist/learn --emptyOutDir",
+    "build:learn": "npm --prefix learn ci && npm --prefix learn run build -- --outDir ../dist/learn --emptyOutDir",
     "preview": "vite preview",
     "test:learn": "npm --prefix learn test && npm --prefix learn run check:content && npm --prefix learn run check:economy"
   },
