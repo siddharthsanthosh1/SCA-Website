@@ -1,0 +1,44 @@
+rules_version = '2';
+
+// Student Code Alliance — Learn
+//
+// Course content is NOT in Firestore (it ships in the app bundle), so the only
+// thing stored here is each student's own progress. The rule is simple: you can
+// read and write your own document tree and nothing else.
+//
+// Paste this into Firebase Console → Firestore Database → Rules → Publish.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+      // A profile may only ever be written by its owner, and the uid field
+      // must match the signed-in user so a document can't be forged.
+      allow create: if isOwner(uid)
+                    && request.resource.data.uid == uid;
+      allow update: if isOwner(uid)
+                    && request.resource.data.uid == uid;
+      allow delete: if isOwner(uid);
+
+      // users/{uid}/progress/{courseId} — one document per course
+      match /progress/{courseId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      // users/{uid}/answers/{questionId} — per-question attempt record
+      match /answers/{questionId} {
+        allow read, write: if isOwner(uid);
+      }
+    }
+
+    // Everything else is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,348 @@
+/* ==========================================================================
+   The game layer: Pip, Sparks, the Workshop, Byteville and the moments.
+
+   The page stays white. Colour (the --joy-* tokens) appears only on Pip,
+   Byteville, the Workshop, badges and celebration moments — never as a page
+   background. Kid surfaces are chunkier: --r-blob corners and a 2px border.
+
+   Every animation here moves transform or opacity only, and every element's
+   resting style is its finished state, so the reduced-motion rule in app.css
+   (animation: none) leaves a complete, still picture.
+   ========================================================================== */
+
+/* ---------- tap targets ----------
+   44 × 44 minimum wherever a child taps. New controls are simply that big.
+   The existing small buttons keep their look and get an invisible hit area
+   that reaches 44px tall. */
+.btn--sm, .iconbtn, .hdr__link { position: relative; }
+.btn--sm::after, .iconbtn::after, .hdr__link::after {
+  content: ""; position: absolute; left: 0; right: 0; top: 50%;
+  height: 44px; min-width: 44px; transform: translateY(-50%);
+}
+.iconbtn::after { left: 50%; width: 44px; transform: translate(-50%, -50%); }
+
+.brand { min-height: 44px; }
+
+.btn--kid {
+  min-height: 44px; padding: 11px 20px; border-radius: 999px; font-weight: 700;
+}
+
+/* ---------- kid surfaces ---------- */
+.kid {
+  background: var(--surface); border: 2px solid var(--line-strong);
+  border-radius: var(--r-blob); padding: clamp(16px, 2.6vw, 24px);
+}
+.kid h2, .kid h3, .kid-heading { font-weight: 800; }
+
+/* ---------- Pip ---------- */
+.pip { display: block; overflow: visible; flex: none; }
+.pip * { transform-box: fill-box; }
+.pip__float, .pip__move { transform-origin: 50% 100%; }
+/* Each arm is an upper arm and a forearm. The arm turns at the shoulder —
+   (29.5, 88) and (90.5, 88), the middle top of the invisible .pip__armbox —
+   and the forearm bends at the elbow, the top of its own rounded rect. */
+.pip__arm { transform-origin: 50% 4px; }
+.pip__fore { transform-origin: 50% 6.5px; }
+.pip__arm--l .pip__fore { transform: rotate(-8deg); }
+.pip__arm--r .pip__fore { transform: rotate(8deg); }
+.pip__eyes { transform-origin: 50% 50%; }
+
+/* Poses — the resting state of each mood, animation or not. */
+.pip--cheering .pip__arm--l { transform: rotate(150deg); }
+.pip--cheering .pip__arm--r { transform: rotate(-150deg); }
+.pip--waving .pip__arm--r { transform: rotate(-145deg); }
+.pip--oops .pip__arm--l { transform: rotate(35deg); }
+.pip--oops .pip__arm--r { transform: rotate(-35deg); }
+.pip--cheering .pip__arm--l .pip__fore { transform: rotate(24deg); }
+.pip--cheering .pip__arm--r .pip__fore { transform: rotate(-24deg); }
+.pip--waving .pip__arm--r .pip__fore { transform: rotate(-22deg); }
+
+/* Motion. */
+.pip--anim.pip--idle .pip__float,
+.pip--anim.pip--happy .pip__float,
+.pip--anim.pip--waving .pip__float,
+.pip--anim.pip--thinking .pip__float { animation: pip-float 3.4s ease-in-out infinite; }
+.pip--anim.pip--sleeping .pip__float { animation: pip-breathe 4.2s ease-in-out infinite; }
+.pip--anim.pip--cheering .pip__move { animation: pip-hop 0.6s var(--bounce) 2; }
+/* The right arm runs 80ms behind the left so they aren't in lockstep, and
+   each elbow follows its shoulder 50ms late, like a real arm's follow-through. */
+.pip--anim.pip--cheering .pip__arm--l { animation: pip-cheer-l 0.3s ease-in-out 4 alternate; }
+.pip--anim.pip--cheering .pip__arm--r { animation: pip-cheer-r 0.3s ease-in-out 0.08s 4 alternate; }
+.pip--anim.pip--cheering .pip__arm--l .pip__fore { animation: pip-elbow-l 0.3s ease-in-out 0.05s 4 alternate; }
+.pip--anim.pip--cheering .pip__arm--r .pip__fore { animation: pip-elbow-r 0.3s ease-in-out 0.13s 4 alternate; }
+.pip--anim.pip--oops .pip__move { animation: pip-shake 0.5s ease-in-out 1; }
+.pip--anim.pip--waving .pip__arm--r { animation: pip-wave 0.9s ease-in-out infinite alternate; }
+.pip--anim.pip--thinking .pip__light { animation: pip-pulse 1.1s ease-in-out infinite; }
+.pip--anim .pip__eyes { animation: pip-blink var(--pip-blink, 5s) var(--pip-blink-delay, 0s) infinite; }
+.pip--anim.pip--sleeping .pip__zzz { animation: pip-zzz 2.4s ease-in-out infinite; }
+.pip--anim .pip__trail-p { animation: pip-trail 2.4s ease-out infinite; }
+/* --pip-step is one footstep. Whoever moves Pip sets it to match the speed
+   Pip travels (see .town__walker), so the feet don't skate. The body dips
+   once per step, in time with the feet. */
+.pip--anim.pip--walking .pip__foot--l { animation: pip-step var(--pip-step, 0.5s) ease-in-out infinite alternate; }
+.pip--anim.pip--walking .pip__foot--r { animation: pip-step var(--pip-step, 0.5s) ease-in-out var(--pip-step, 0.5s) infinite alternate; }
+.pip--anim.pip--walking:not(.pip--cheering):not(.pip--oops) .pip__move { animation: pip-bob calc(var(--pip-step, 0.5s) / 2) ease-in-out infinite alternate; }
+
+@keyframes pip-float   { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes pip-breathe { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.975); } }
+@keyframes pip-hop     { 0%, 100% { transform: translateY(0) scale(1, 1); } 15% { transform: translateY(0) scale(1.06, 0.92); } 50% { transform: translateY(-14px) scale(0.97, 1.04); } }
+@keyframes pip-cheer-l { from { transform: rotate(150deg); } to { transform: rotate(170deg); } }
+@keyframes pip-cheer-r { from { transform: rotate(-150deg); } to { transform: rotate(-170deg); } }
+@keyframes pip-elbow-l { from { transform: rotate(24deg); } to { transform: rotate(42deg); } }
+@keyframes pip-elbow-r { from { transform: rotate(-24deg); } to { transform: rotate(-42deg); } }
+@keyframes pip-shake   { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-4px) rotate(-3deg); } 45% { transform: translateX(4px) rotate(3deg); } 70% { transform: translateX(-2px); } }
+@keyframes pip-wave    { from { transform: rotate(-125deg); } to { transform: rotate(-165deg); } }
+@keyframes pip-pulse   { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+@keyframes pip-blink   { 0%, 95%, 100% { transform: scaleY(1); } 97% { transform: scaleY(0.1); } }
+@keyframes pip-zzz     { 0%, 100% { opacity: 1; transform: translateY(0); } 50% { opacity: 0.4; transform: translateY(-3px); } }
+@keyframes pip-trail   { 0% { opacity: 0; transform: translate(4px, 4px) scale(0.5); } 25% { opacity: 1; } 100% { opacity: 0; transform: translate(-10px, -16px) scale(1); } }
+@keyframes pip-step    { from { transform: translateY(0); } to { transform: translateY(-2.5px); } }
+@keyframes pip-bob     { from { transform: translateY(0); } to { transform: translateY(-1.5px); } }
+
+/* ---------- Pip's speech ---------- */
+.pipsays { display: flex; align-items: flex-end; gap: 10px; }
+.pipsays__bubble {
+  position: relative; background: var(--joy-bubble); color: var(--text);
+  border: 2px solid #f5dcb0; border-radius: 18px 18px 18px 6px;
+  padding: 9px 14px; font-size: 0.93rem; font-weight: 500; line-height: 1.45;
+  max-width: 34ch; margin-bottom: 14px;
+}
+.pipsays--react { animation: joy-rise 0.35s var(--ease) both; }
+.pipsays--react .pipsays__bubble { margin-bottom: 10px; }
+
+@keyframes joy-rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* ---------- Sparks ---------- */
+.bolt { display: inline-block; vertical-align: -2px; flex: none; }
+.sparkamt { display: inline-flex; align-items: center; gap: 3px; font-variant-numeric: tabular-nums; }
+
+.sparks {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  min-height: 44px; min-width: 44px; padding: 0 12px; border-radius: 999px;
+  border: 2px solid #f6d9a3; background: var(--joy-bubble); color: #7a4b00;
+  font-weight: 700; font-size: 0.9rem; font-variant-numeric: tabular-nums;
+  transition: transform 0.2s var(--bounce);
+}
+.sparks:hover { transform: translateY(-1px); }
+.sparks__in { display: inline-flex; align-items: center; gap: 5px; }
+.sparks__in.is-bump { animation: sparks-bump 0.45s var(--bounce); }
+@keyframes sparks-bump { 0%, 100% { transform: scale(1); } 40% { transform: scale(1.14); } }
+
+.sparkfloat {
+  position: absolute; right: 8px; top: -4px; z-index: 5; pointer-events: none;
+  display: inline-flex; align-items: center; gap: 2px;
+  font-weight: 800; font-size: 0.85rem; color: #9a5d00;
+  animation: spark-float 1s var(--ease) forwards;
+}
+@keyframes spark-float { 0% { opacity: 0; transform: translateY(4px); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(-26px); } }
+.sparks .sparkfloat { right: auto; left: 50%; top: 100%; margin-left: -14px; animation-name: spark-float-down; }
+@keyframes spark-float-down { 0% { opacity: 0; transform: translateY(-6px); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(12px); } }
+
+/* ---------- answer moments ---------- */
+.q { position: relative; }
+.joy .opt.correct { animation: opt-pulse 0.6s var(--bounce); }
+.joy .opt.wrong { animation: opt-shake 0.4s ease-in-out; }
+@keyframes opt-pulse { 0%, 100% { transform: scale(1); } 40% { transform: scale(1.025); } }
+@keyframes opt-shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 60% { transform: translateX(4px); } }
+.verdict { animation: joy-rise 0.3s var(--ease) both; }
+.verdict__icon { flex: none; margin-top: 2px; }
+.opt__mark { margin-left: auto; flex: none; display: inline-flex; align-items: center; gap: 4px; font-size: 0.78rem; font-weight: 700; }
+.opt.correct .opt__mark { color: var(--green); }
+.opt.wrong .opt__mark { color: var(--red); }
+.fill-shake { animation: opt-shake 0.4s ease-in-out; }
+
+/* ---------- confetti ---------- */
+.confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 90; }
+/* Three shapes — paper rectangles, dots and thin streamers — each spinning
+   flat (rotateZ) and tumbling end over end (rotateX) at its own rate, so
+   they flutter and catch the light instead of sliding down. */
+.confetti__p {
+  position: absolute; top: -18px; width: 8px; height: 12px; border-radius: 2px;
+  opacity: 0; animation: confetti-fall 2s cubic-bezier(0.25, 0.6, 0.5, 1) both;
+}
+.confetti__p--dot { width: 8px; height: 8px; border-radius: 50%; }
+.confetti__p--strip { width: 4px; height: 17px; border-radius: 1px; }
+@keyframes confetti-fall {
+  0% { opacity: 1; transform: translate3d(0, 0, 0) rotateZ(0deg) rotateX(0deg); }
+  85% { opacity: 1; }
+  100% { opacity: 0; transform: translate3d(var(--drift), 105vh, 0) rotateZ(var(--spin)) rotateX(var(--flip)); }
+}
+
+/* ---------- dialog (lesson / topic / course complete) ---------- */
+.moment {
+  position: fixed; inset: 0; z-index: 80; display: grid; place-items: center;
+  padding: 16px; background: rgba(22, 32, 43, 0.28);
+  animation: joy-fade 0.2s var(--ease) both; overflow-y: auto;
+}
+@keyframes joy-fade { from { opacity: 0; } to { opacity: 1; } }
+.moment__card {
+  position: relative; width: min(480px, 100%); text-align: center;
+  background: var(--surface); border: 2px solid var(--line-strong); border-radius: var(--r-blob);
+  box-shadow: var(--shadow-lg); padding: clamp(20px, 4vw, 30px);
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  animation: moment-pop 0.4s var(--bounce) both;
+}
+.moment__card--wide { width: min(640px, 100%); }
+@keyframes moment-pop { from { opacity: 0; transform: translateY(10px) scale(0.96); } to { opacity: 1; transform: none; } }
+.moment__close {
+  position: absolute; top: 8px; right: 8px; width: 44px; height: 44px; border-radius: 50%;
+  border: 0; background: transparent; color: var(--text-3); cursor: pointer; display: grid; place-items: center;
+}
+.moment__close:hover { background: var(--surface-2); color: var(--text); }
+.moment__title { font-size: clamp(1.5rem, 4vw, 1.9rem); font-weight: 800; }
+.moment__earned {
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px;
+  background: var(--joy-bubble); border: 2px solid #f6d9a3; color: #7a4b00; font-weight: 800; font-size: 1.05rem;
+}
+.moment__bar { width: 100%; height: 12px; border-radius: 999px; background: var(--surface-3); overflow: hidden; }
+.moment__bar-fill {
+  height: 100%; width: 100%; border-radius: 999px; transform-origin: 0 50%;
+  background: linear-gradient(90deg, var(--joy-sky), var(--joy-mint));
+  transition: transform 0.9s var(--ease) 0.25s;
+}
+.moment__actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; width: 100%; }
+.moment__plain { display: flex; align-items: center; gap: 10px; color: var(--text); font-weight: 600; }
+.tick {
+  width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; flex: none;
+  background: var(--green); color: #fff;
+}
+.cutaway { width: 100%; border-radius: 20px; background: linear-gradient(#eef8ff, #ffffff 60%); border: 2px solid #d6ecfb; overflow: hidden; }
+.cutaway svg { display: block; width: 100%; height: auto; }
+.newbadges { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.newbadges figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 0.82rem; font-weight: 600; color: var(--text); }
+
+/* ---------- certificate ---------- */
+.certificate {
+  width: 100%; text-align: center; padding: clamp(18px, 4vw, 34px);
+  border: 2px solid var(--line-strong); border-radius: 22px; background: #fffdf8;
+  box-shadow: inset 0 0 0 6px #fffdf8, inset 0 0 0 8px #f2ddb8;
+  display: flex; flex-direction: column; align-items: center; gap: 10px; color: var(--text);
+}
+.certificate__eyebrow { font-size: 0.74rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--amber); font-weight: 700; }
+.certificate__name {
+  font-family: Jost, sans-serif; font-weight: 700; font-size: clamp(1.5rem, 5vw, 2.2rem);
+  border: 0; border-bottom: 2px dashed var(--line-strong); background: transparent; color: var(--text);
+  text-align: center; width: min(100%, 420px); padding: 4px 6px; min-height: 44px;
+}
+.certificate__name:focus { outline: none; border-bottom-color: var(--blue); }
+.certificate__course { font-family: Jost, sans-serif; font-weight: 700; font-size: 1.3rem; }
+.certificate__foot { display: flex; justify-content: space-between; gap: 16px; width: 100%; font-size: 0.85rem; color: var(--text-3); margin-top: 8px; }
+
+/* Printing: only the certificate. The page around it is taken out of the
+   flow entirely (not just hidden) so it never adds blank pages. */
+@media print {
+  @page { margin: 14mm; }
+  body { background: #fff; }
+  .hdr, .banner, .no-print, .confetti { display: none !important; }
+  body:has(> .moment .certificate) > *:not(.moment) { display: none !important; }
+  .moment { position: static; display: block; padding: 0; background: none; overflow: visible; }
+  .moment__card { width: 100%; border: 0; box-shadow: none; padding: 0; }
+  .moment__card > *:not(.certificate-wrap) { display: none !important; }
+  .certificate-page > *:not(.certificate-wrap) { display: none !important; }
+  .certificate {
+    min-height: 88vh; justify-content: center; border-color: #c9a35a;
+    box-shadow: inset 0 0 0 10px #fffdf8, inset 0 0 0 12px #e2c58f;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .certificate-wrap { width: 100%; }
+  .certificate__name, .certificate__name:focus { border-bottom-color: transparent !important; caret-color: transparent; }
+}
+
+/* ---------- switch (Fun mode) ---------- */
+.switch {
+  display: inline-flex; align-items: center; gap: 12px; min-height: 44px; padding: 4px 0;
+  background: none; border: 0; cursor: pointer; color: var(--text); font-weight: 600; text-align: left;
+}
+.switch__track {
+  width: 50px; height: 30px; border-radius: 999px; background: var(--line-strong); flex: none;
+  position: relative; transition: background 0.2s var(--ease);
+}
+.switch__thumb {
+  position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%;
+  background: #fff; box-shadow: var(--shadow-sm); transition: transform 0.2s var(--bounce);
+}
+.switch[aria-checked="true"] .switch__track { background: var(--joy-mint); }
+.switch[aria-checked="true"] .switch__thumb { transform: translateX(20px); }
+
+/* ---------- Workshop ---------- */
+.shop-hero { display: flex; align-items: center; gap: clamp(14px, 4vw, 32px); flex-wrap: wrap; }
+.shop-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(168px, 100%), 1fr)); }
+.item {
+  display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;
+  background: var(--surface); border: 2px solid var(--line); border-radius: var(--r-blob);
+  padding: 14px 12px 14px;
+  transition: border-color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.item:hover { border-color: var(--line-strong); }
+.item.is-on { border-color: var(--joy-mint); box-shadow: 0 0 0 3px rgba(47, 196, 160, 0.18); }
+.item.is-short .item__art, .item.is-locked .item__art { opacity: 0.45; filter: grayscale(0.6); }
+.item__art { height: 104px; width: 100%; display: grid; place-items: center; }
+.item__art svg { max-height: 104px; width: auto; }
+.item__name { font-family: Jost, sans-serif; font-weight: 700; color: var(--text); font-size: 1.02rem; line-height: 1.2; }
+.item__price { font-size: 0.86rem; color: var(--text-2); font-weight: 600; min-height: 1.4em; }
+.item__note { font-size: 0.8rem; color: var(--text-3); min-height: 1.3em; }
+.item .btn { width: 100%; }
+.item__confirm { display: flex; gap: 6px; width: 100%; }
+.item__confirm .btn { flex: 1; padding-inline: 10px; }
+
+/* ---------- Byteville ---------- */
+.town { border: 2px solid #d6ecfb; border-radius: var(--r-blob); background: #f4faff; overflow: hidden; }
+.town__scroll { overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+.town__svg { display: block; width: 100%; min-width: 880px; height: auto; }
+.town__bldg { cursor: pointer; outline: none; }
+.town__bldg:focus-visible .town__ring, .town__bldg.is-picked .town__ring { opacity: 1; }
+.town__ring { opacity: 0; transition: opacity 0.15s var(--ease); }
+.town__grow { transform-box: fill-box; transform-origin: 50% 100%; animation: town-grow 0.9s var(--bounce) both; }
+@keyframes town-grow { 0% { transform: scale(0.1, 0); opacity: 0; } 55% { transform: scale(1.06, 1.08); opacity: 1; } 75% { transform: scale(0.98, 0.96); } 100% { transform: none; } }
+.town__glow { animation: town-glow 1.2s var(--ease) both; }
+@keyframes town-glow { from { opacity: 0; } to { opacity: 1; } }
+.town__cloud { animation: town-cloud 70s linear infinite alternate; }
+@keyframes town-cloud { from { transform: translateX(-40px); } to { transform: translateX(60px); } }
+/* Pip walks 1080 units each way in ~34.8s, about 31 units a second. At
+   size 44 a foot is ~6 units long, so a 0.3s step covers about 1.6 feet —
+   a brisk little walk rather than a glide. At each end Pip turns round:
+   scaleX runs 1 → 0 → -1 over 0.3% of the loop, about 210ms. Resting
+   (reduced motion), Pip stands at the start of the road. */
+.town__walker { --pip-step: 0.3s; transform: translate(30px, 0); animation: town-walk 70s linear infinite; }
+@keyframes town-walk {
+  0%     { transform: translate(30px, 0) scaleX(1); }
+  49.7%  { transform: translate(1110px, 0) scaleX(1); }
+  50%    { transform: translate(1110px, 0) scaleX(-1); }
+  99.7%  { transform: translate(30px, 0) scaleX(-1); }
+  100%   { transform: translate(30px, 0) scaleX(1); }
+}
+.district { display: flex; flex-direction: column; gap: 8px; }
+.district__list { display: grid; gap: 6px 14px; grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr)); }
+.district__item { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--text-2); min-height: 28px; }
+.district__item.is-built { color: var(--text); font-weight: 600; }
+
+/* ---------- badges ---------- */
+.badges { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(150px, 100%), 1fr)); }
+.badge {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center;
+  padding: 14px 10px; border: 2px solid var(--line); border-radius: var(--r-blob); background: var(--surface);
+}
+.badge.is-off svg { filter: grayscale(1); opacity: 0.35; }
+.badge__name { font-family: Jost, sans-serif; font-weight: 700; color: var(--text); line-height: 1.2; }
+.badge__how { font-size: 0.8rem; color: var(--text-3); line-height: 1.35; }
+.badge__new { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--joy-grape); }
+
+/* ---------- small things ---------- */
+.funline { font-size: 0.86rem; color: var(--text-3); text-align: center; }
+.funline button { background: none; border: 0; padding: 10px 4px; color: var(--blue); font: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.course-pip { display: flex; justify-content: flex-end; }
+@media (max-width: 860px) { .course-pip { justify-content: flex-start; } }
+
+/* ---------- header on phones ----------
+   The Sparks counter joins the header, so on narrow screens the brand gives
+   up its "Learn" tag and the right-hand group never wraps. */
+.hdr__inner > .row { flex-wrap: nowrap; }
+@media (max-width: 520px) {
+  .brand { gap: 8px; font-size: 0.92rem; line-height: 1.15; }
+  .brand__sub { display: none; }
+  .hdr__inner > .row { gap: 8px !important; }
+  .sparks { padding: 0 10px; }
+}
+@media (max-width: 360px) {
+  .brand > span:last-child { display: none; }
+}

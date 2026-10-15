@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Logo from "./Logo";
 import { nav, org } from "../data/site";
+import { asset } from "../lib/asset";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -60,8 +61,8 @@ export default function Footer() {
               <h4 className="site-footer__heading">Get involved</h4>
               <ul>
                 {nav.slice(4).map((i) => (
-                  <li key={i.to}>
-                    <Link to={i.to}>{i.label}</Link>
+                  <li key={i.to || i.href}>
+                    {i.href ? <a href={asset(i.href)}>{i.label}</a> : <Link to={i.to}>{i.label}</Link>}
                   </li>
                 ))}
               </ul>

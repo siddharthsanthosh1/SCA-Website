@@ -18,6 +18,8 @@ export const forms = {
   branchLeader: "https://forms.gle/iLas4uAbBqrywqcQA",
 };
 
+/* `to` is a page of this site; `href` leaves it — SCA Learn is a separate app
+   served at /learn/, and its sign-in page is where every student starts. */
 export const nav = [
   { label: "About", to: "/about" },
   { label: "Branches", to: "/branches" },
@@ -26,6 +28,7 @@ export const nav = [
   { label: "Volunteer", to: "/volunteer" },
   { label: "Hackathon", to: "/hackathon" },
   { label: "FAQ", to: "/faq" },
+  { label: "Learn", href: "learn/#/signin" },
 ];
 
 export const stats = [

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { NavLink, Link, useLocation } from "react-router-dom";
 import Logo from "./Logo";
 import { nav, org, forms } from "../data/site";
+import { asset } from "../lib/asset";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -38,15 +39,21 @@ export default function Header() {
         </Link>
 
         <nav className="site-nav" aria-label="Primary">
-          {nav.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) => `site-nav__link ${isActive ? "is-active" : ""}`}
-            >
-              {item.label}
-            </NavLink>
-          ))}
+          {nav.map((item) =>
+            item.href ? (
+              <a key={item.href} href={asset(item.href)} className="site-nav__link">
+                {item.label}
+              </a>
+            ) : (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) => `site-nav__link ${isActive ? "is-active" : ""}`}
+              >
+                {item.label}
+              </NavLink>
+            )
+          )}
         </nav>
 
         <div className="site-header__actions">
@@ -72,21 +79,30 @@ export default function Header() {
 
       <div className={`mobile-menu ${open ? "is-open" : ""}`} hidden={!open}>
         <nav className="mobile-menu__nav" aria-label="Mobile">
-          {nav.map((item, i) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              style={{ "--i": i }}
-              className={({ isActive }) =>
-                `mobile-menu__link ${isActive ? "is-active" : ""}`
-              }
-            >
-              <span>{item.label}</span>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M4 12 12 4M12 4H6M12 4v6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </NavLink>
-          ))}
+          {nav.map((item, i) => {
+            const inner = (
+              <>
+                <span>{item.label}</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M4 12 12 4M12 4H6M12 4v6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </>
+            );
+            return item.href ? (
+              <a key={item.href} href={asset(item.href)} style={{ "--i": i }} className="mobile-menu__link">
+                {inner}
+              </a>
+            ) : (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                style={{ "--i": i }}
+                className={({ isActive }) => `mobile-menu__link ${isActive ? "is-active" : ""}`}
+              >
+                {inner}
+              </NavLink>
+            );
+          })}
         </nav>
         <a
           className="btn btn--accent"

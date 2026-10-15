@@ -28,9 +28,18 @@ jobs:
         with:
           node-version: 20
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            learn/package-lock.json
 
       - name: Install packages
         run: npm ci
+
+      - name: Install SCA Learn packages
+        run: npm ci --prefix learn
+
+      - name: Check SCA Learn
+        run: npm run test:learn
 
       - name: Build website
         run: npm run build
